@@ -6,7 +6,7 @@ from config import TOKEN
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 
-from bot_brain.handlers.user import register_echo
+from bot_brain.handlers.youtube import register_youtube
 from bot_brain.handlers.admin import register_admin_handlers
 from bot_brain.middleware.antiflood import ThrottlingMiddleware
 from bot_brain.data_base.users_db import db_start
@@ -23,7 +23,7 @@ def register_all_filters(dispatcher):
 
 def register_all_handlers(dispatcher):
     register_admin_handlers(dispatcher)
-    register_echo(dispatcher)
+    register_youtube(dispatcher)
 
 
 async def main():

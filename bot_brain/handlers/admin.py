@@ -54,11 +54,16 @@ async def hide_menu(call: CallbackQuery):
     await call.message.delete()
 
 
+async def backup(msg: Message):
+    await msg.answer_document(open('users.db', 'rb'))
+
+
 def register_admin_handlers(dp: Dispatcher):
     dp.register_message_handler(admin_panel, commands='admin', is_admin=True)
+    dp.register_message_handler(backup, commands='backup', is_admin=True)
     # add
     dp.register_callback_query_handler(start_add, text='add')
-    dp.register_message_handler(set_new_user, lambda msg: len(msg.text) > 6,
+    dp.register_message_handler(set_new_user, lambda msg: len(msg.text) > 6 and msg.text.isnumeric(),
                                 state=FsmAdmin.new_id)
     dp.register_message_handler(save_user, state=FsmAdmin.name, content_types='text')
     # remove
