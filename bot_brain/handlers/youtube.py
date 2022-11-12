@@ -1,12 +1,15 @@
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import Message, CallbackQuery
 from os import remove
+from asyncio import gather
 
 from pytube import YouTube
 from pytube.exceptions import RegexMatchError
 
 from bot_brain.keyboards.inline_user import yt_options, yt_call
 from bot_brain.misc.coding import decode, encode
+from bot_brain.misc.convert_audio import m4a_to_mp3
+from bot_brain.misc.audio import find_key
 
 
 async def evaluate_youtube(msg: Message):
@@ -78,11 +81,28 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         assert (size := round(video.filesize_approx / 1000000)) < 600
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
-        video.download(filename=(file := f'{call.from_user.id}.m4a'))
-        await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
-        await call.message.answer_audio(open(file, 'rb'))
-        await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
-        remove(file)
+        video.download(filename=f'{call.from_user.id}.m4a',
+                       output_path='bot_brain\\misc\\files')
+        # конвертация и находка
+        await call.bot.edit_message_text('🔄 Конвертирую👨‍🔧', call.message.chat.id, call.message.message_id + 1)
+        await m4a_to_mp3(call.from_user.id)
+        await call.bot.edit_message_text('🔎 Определяю тональность🎵', call.message.chat.id, call.message.message_id + 1)
+        await (key := gather(find_key(call.from_user.id)))
+        print(key.result()[0])
+        key = key.result()[0]
+        try:
+            # загрузка
+            await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
+
+            await call.message.answer_audio(open(f"bot_brain\\misc\\files\\{call.from_user.id}.mp3", 'rb'),
+                                            caption=f"🎹Тональность: {key[0]}\n"
+                                                    f"🎲Корреляция: {key[1]}\n\n"
+                                                    f"🤷‍♂Альтернатива: {'-' if key[2]==0 else key[2]}, "
+                                                    f"{'-' if key[3]==0 else key[3]}")
+            await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
+            remove(f"bot_brain\\misc\\files\\{call.from_user.id}.mp3")
+        except FileNotFoundError:
+            await call.message.answer('Я не нашел файл который сам же скачал🙂')
 
     except AssertionError:
         await call.message.answer('🟡Я скачиваю максимум 600 мб, хотят тут документалку скачать блин')
