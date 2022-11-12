@@ -78,7 +78,7 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         yt.streams.filter(only_audio=True)
         video = yt.streams.get_by_itag(251)
 
-        assert (size := round(video.filesize_approx / 1000000)) < 600
+        assert (size := round(video.filesize_approx / 1000000)) < 15
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=f'{call.from_user.id}.m4a',
