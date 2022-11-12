@@ -88,7 +88,6 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         await m4a_to_mp3(call.from_user.id)
         await call.bot.edit_message_text('🔎 Определяю тональность🎵', call.message.chat.id, call.message.message_id + 1)
         await (key := gather(find_key(call.from_user.id)))
-        print(key.result()[0])
         key = key.result()[0]
         try:
             # загрузка
