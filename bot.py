@@ -1,11 +1,13 @@
 import logging
 import asyncio
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from datetime import datetime
 
 from aiogram import Dispatcher, Bot
 from config import TOKEN
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-
+from bot_brain.misc.air import send_message_cron
 from bot_brain.handlers.youtube import register_youtube
 from bot_brain.handlers.admin import register_admin_handlers
 from bot_brain.middleware.antiflood import ThrottlingMiddleware
@@ -38,6 +40,11 @@ async def main():
     dp = Dispatcher(bot, storage=storage)
 
     await db_start()
+
+    scheduler = AsyncIOScheduler(timezone='Asia/Tashkent')
+    scheduler.add_job(send_message_cron, trigger='cron', hour=7, minute=58, start_date=datetime.now(),
+                      kwargs={'bot': bot})
+    scheduler.start()
 
     dp.middleware.setup(ThrottlingMiddleware())
     register_all_filters(dp)
