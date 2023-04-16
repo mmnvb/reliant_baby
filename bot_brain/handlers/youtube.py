@@ -82,7 +82,7 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=f'{call.from_user.id}.m4a',
-                       output_path='bot_brain\\misc\\files')
+                       output_path='bot_brain/misc/files')
         # конвертация и находка
         await call.bot.edit_message_text('🔄 Конвертирую👨‍🔧', call.message.chat.id, call.message.message_id + 1)
         await m4a_to_mp3(call.from_user.id)
@@ -93,7 +93,7 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
             # загрузка
             await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
 
-            await call.message.answer_audio(open(f"bot_brain\\misc\\files\\{call.from_user.id}.mp3", 'rb'),
+            await call.message.answer_audio(open(f"bot_brain/misc/files/{call.from_user.id}.mp3", 'rb'),
                                             caption=f"🎹Тональность: {key[0]}\n"
                                                     f"🎲Корреляция: {key[1]}\n\n"
                                                     f"🤷‍♂Альтернатива: {'-' if key[2]==0 else key[2]}, "

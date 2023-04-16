@@ -13,7 +13,11 @@ async def send_message_cron(bot: Bot):
     users = users.result()[0]
     await (daily_text := gather(get_whether_msg()))
     for user in users:
-        await bot.send_message(user[0], daily_text.result()[0])
+        try:
+            print(f"{user} tried")
+            await bot.send_message(user[0], daily_text.result()[0])
+        except ConnectionResetError:
+            pass
 
 
 async def give_air(msg: Message):
