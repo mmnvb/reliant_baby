@@ -1,6 +1,7 @@
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
 from asyncio import gather
+from aiogram.utils.exceptions import BotBlocked
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,7 +17,7 @@ async def send_message_cron(bot: Bot):
         try:
             print(f"{user} tried")
             await bot.send_message(user[0], daily_text.result()[0])
-        except ConnectionResetError:
+        except [ConnectionResetError, BotBlocked, ConnectionError]:
             pass
 
 
@@ -77,12 +78,11 @@ async def give_weather(msg: Message):
     x = data.index('Today')
     tommorow = [data[x+6].split()[1], (data[x+8].split("°"))]
 
-    response_text = f"{weather_icons.get(data[1])}Сейчас в Ташкенте {data[3]}\n\n" \
-                    f"💧Влажность: {data[5]}\n" \
-                    f"🍃Ветер: {data[7]}\n\n" \
-                    f"<span class='tg-spoiler'>🗓Завтра {tommorow[1][1]}-{tommorow[1][0]}°C" \
-                    f" ({tommorow[0]} AQI)</span>"
-    await msg.answer(response_text)
+    await msg.answer(f"{weather_icons.get(data[1])}Сейчас в Ташкенте {data[3]}\n\n"
+                     f"💧Влажность: {data[5]}\n"
+                     f"🍃Ветер: {data[7]}\n\n"
+                     f"<span class='tg-spoiler'>🗓Завтра {tommorow[1][1]}-{tommorow[1][0]}°C"
+                     f" ({tommorow[0]} AQI)</span>")
 
 
 def register_air_requests(dp: Dispatcher):
