@@ -27,8 +27,7 @@ async def give_air(msg: Message):
 
 async def get_whether_msg():
     req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
-    src = req.text
-    soup = BeautifulSoup(src, 'lxml')
+    soup = BeautifulSoup(req.text, 'lxml')
 
     text = soup.find('tr', class_='today').text.split()
     air_index = int(text[len(text)-5])
@@ -57,8 +56,7 @@ async def get_whether_msg():
 
 async def give_weather(msg: Message):
     req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
-    src = req.text
-    soup = BeautifulSoup(src, 'lxml')
+    soup = BeautifulSoup(req.text, 'lxml')
 
     data = [td.text for td in soup.find_all('td')]
     weather_icons = {
