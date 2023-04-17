@@ -28,42 +28,25 @@ async def give_air(msg: Message):
 async def get_whether_msg():
     req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
     src = req.text
-
-    # with open("index.html", 'w', encoding="utf-8") as file:
-    #     file.write(req.text)
-    #
-    # with open("index.html", 'r', encoding="utf-8") as file:
-    #     src = file.read()
-
     soup = BeautifulSoup(src, 'lxml')
 
     text = soup.find('tr', class_='today').text.split()
     air_index = int(text[len(text)-5])
-
-    # temperature = text[3].removeprefix('AQI').replace('°', '°-').removesuffix('-')
     temperature = text[len(text)-3].removeprefix('AQI').split('°')
     temperature = sorted(temperature, reverse=True)
 
-    air_comment = "-"
-    air_smile = "-"
     if air_index < 51:
-        air_comment = 'чистый'
-        air_smile = '🟢'
-    elif 101 > air_index > 50:
-        air_comment = 'средний'
-        air_smile = '🟡'
-    elif 151 > air_index > 100:
-        air_comment = 'нездоровый для чувст. групп'
-        air_smile = '🟠'
-    elif 201 > air_index > 150:
-        air_comment = 'нездоровый'
-        air_smile = '🟠'
-    elif 301 > air_index > 200:
-        air_comment = 'опасный'
-        air_smile = '🔴'
-    elif air_index > 300:
-        air_comment = 'Очень опасный'
-        air_smile = '⚫'
+        air_comment, air_smile = 'чистый', '🟢'
+    elif air_index < 101:
+        air_comment, air_smile = 'средний', '🟡'
+    elif air_index < 151:
+        air_comment, air_smile = 'нездоровый для чувст. групп', '🟠'
+    elif air_index < 201:
+        air_comment, air_smile = 'нездоровый', '🟠'
+    elif air_index < 301:
+        air_comment, air_smile = 'опасный', '🔴'
+    else:
+        air_comment, air_smile = 'Очень опасный', '⚫'
 
     respond_text = f"🌦Сегодня в Ташкенте {temperature[0]}° - {temperature[1]}° " \
                    f"{'холода' if temperature[1].startswith('-') else 'тепла'}\n\n" \
@@ -72,5 +55,38 @@ async def get_whether_msg():
     return respond_text
 
 
+async def give_weather(msg: Message):
+    req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
+    src = req.text
+    soup = BeautifulSoup(src, 'lxml')
+
+    data = [td.text for td in soup.find_all('td')]
+    weather_icons = {
+        "Clear sky": "☀️",
+        "Few clouds": "🌤️",
+        "Variable cloudiness": "⛅",
+        "Broken clouds": "🌥️",
+        "Scattered clouds": "🌤️",
+        "Overcast": "☁️",
+        "Mist": "🌁",
+        "Fog": "🌁",
+        "Rain": "🌧️",
+        "Thunderstorm": "⛈️",
+        "Snow": "❄️",
+        "Blizzard": "🌨"
+    }
+
+    x = data.index('Today')
+    tommorow = [data[x+6].split()[1], (data[x+8].split("°"))]
+
+    response_text = f"{weather_icons.get(data[1])}Сейчас в Ташкенте {data[3]}\n\n" \
+                    f"💧Влажность: {data[5]}\n" \
+                    f"🍃Ветер: {data[7]}\n\n" \
+                    f"<span class='tg-spoiler'>🗓Завтра {tommorow[1][1]}-{tommorow[1][0]}°C" \
+                    f" ({tommorow[0]} AQI)</span>"
+    await msg.answer(response_text)
+
+
 def register_air_requests(dp: Dispatcher):
     dp.register_message_handler(give_air, commands='air')
+    dp.register_message_handler(give_weather, commands='weather')
