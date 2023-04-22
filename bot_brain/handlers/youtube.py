@@ -4,7 +4,7 @@ from os import remove
 from asyncio import gather
 
 from pytube import YouTube
-from pytube.exceptions import RegexMatchError
+from pytube.exceptions import RegexMatchError, PytubeError
 
 from bot_brain.keyboards.inline_user import yt_options, yt_call
 from bot_brain.misc.coding import decode, encode
@@ -23,6 +23,9 @@ async def evaluate_youtube(msg: Message):
 
     except RegexMatchError:
         await msg.answer('Нет видео по этой ссылке😕')
+
+    except PytubeError:
+        await msg.answer('Smth went wrong, try again')
 
 
 async def download_high(call: CallbackQuery, callback_data: dict):
