@@ -102,7 +102,7 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
                                                     f"🤷‍♂Альтернатива: {'-' if key[2]==0 else key[2]}, "
                                                     f"{'-' if key[3]==0 else key[3]}")
             await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
-            remove(f"bot_brain\\misc\\files\\{call.from_user.id}.mp3")
+            remove(f"bot_brain/misc/files/{call.from_user.id}.mp3")
         except FileNotFoundError:
             await call.message.answer('Я не нашел файл который сам же скачал🙂')
 
