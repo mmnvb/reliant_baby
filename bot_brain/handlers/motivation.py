@@ -23,7 +23,7 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
             # get random topic
             motive = ["Andrew Tate motivation #shorts", "No Fap motivation #shorts", "Reject modernity #shorts",
                       "callisthenics insane motivation #shorts", "embrace greatness #shorts",
-                      "exposed the matrix #shorts", "inspirational quotes #shorts"
+                      "exposed the matrix #shorts", "inspirational quotes #shorts",
                       "воркаут мотивация #shorts", "игорь войтенко мотивация #shorts"]
 
             s = Search(choice(motive))

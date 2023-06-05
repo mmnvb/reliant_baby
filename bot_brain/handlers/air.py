@@ -86,5 +86,5 @@ async def give_weather(msg: Message):
 
 
 def register_air_requests(dp: Dispatcher):
-    dp.register_message_handler(give_air, commands='air')
-    dp.register_message_handler(give_weather, commands='weather')
+    dp.register_message_handler(give_air, commands='air', in_db=True)
+    dp.register_message_handler(give_weather, commands='weather', in_db=True)
