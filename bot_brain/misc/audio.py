@@ -63,7 +63,7 @@ class TonalFragment(object):
 
 
 async def find_key(input_file: int):
-    audio_path = f"bot_brain\\misc\\files\\{input_file}.mp3"
+    audio_path = f"temp/{input_file}.mp3"
     y, sra = librosa.load(audio_path)
     y_harmonic, y_percussive = librosa.effects.hpss(y)
     track = TonalFragment(y_harmonic, sra)

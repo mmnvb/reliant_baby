@@ -36,14 +36,14 @@ async def download_high(call: CallbackQuery, callback_data: dict):
     try:
         yt = YouTube(decode(callback_data.get('yt_object')))
         yt.streams.filter(file_extension='mp4')
-        video = yt.streams.get_by_itag(22)
+        video = yt.streams.get_highest_resolution()
 
-        assert (size := round(video.filesize_approx / 1000000)) < 600
+        assert (size := round(video.filesize_approx / 1000000)) < 50
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
-        video.download(filename=(file := f'{call.from_user.id}.mp4'))
+        video.download(filename=(file := f'temp/{call.from_user.id}.mp4'))
         await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
-        await call.message.answer_video(open(file, 'rb'), supports_streaming=True)
+        await call.message.answer_video(open(file, 'rb'))
         await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
         remove(file)
     except AssertionError:
@@ -60,10 +60,10 @@ async def download_low(call: CallbackQuery, callback_data: dict):
         yt.streams.filter(file_extension='mp4')
         video = yt.streams.get_by_itag(18)
 
-        assert (size := round(video.filesize_approx / 1000000)) < 600
+        assert (size := round(video.filesize_approx / 1000000)) < 50
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
-        video.download(filename=(file := f'{call.from_user.id}.mp4'))
+        video.download(filename=(file := f'temp/{call.from_user.id}.mp4'))
         await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id+1)
         await call.message.answer_video(open(file, 'rb'))
         await call.bot.delete_message(call.message.chat.id, call.message.message_id+1)
@@ -86,7 +86,7 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         assert (size := round(video.filesize_approx / 1000000)) < 50
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=f'{call.from_user.id}.m4a',
-                       output_path='bot_brain/misc/files')
+                       output_path='temp')
         # convert and find
         await call.bot.edit_message_text('🔄 Конвертирую👨‍🔧', call.message.chat.id, call.message.message_id + 1)
         await m4a_to_mp3(call.from_user.id, yt.author, yt.title)
@@ -94,9 +94,9 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         # preference check (DB request)
         await (preference := gather(is_musician(call.from_user.id)))
         if preference.result()[0]:
-            await call.message.answer_audio(open(f"bot_brain/misc/files/{call.from_user.id}.mp3", 'rb'))
+            await call.message.answer_audio(open(f"temp/{call.from_user.id}.mp3", 'rb'))
             await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
-            remove(f"bot_brain/misc/files/{call.from_user.id}.mp3")
+            remove(f"temp/{call.from_user.id}.mp3")
             return
 
         # if musician
@@ -107,13 +107,13 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
             # загрузка
             await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
 
-            await call.message.answer_audio(open(f"bot_brain/misc/files/{call.from_user.id}.mp3", 'rb'),
+            await call.message.answer_audio(open(f"temp/{call.from_user.id}.mp3", 'rb'),
                                             caption=f"🎹Тональность: {key[0]}\n"
                                                     f"🎲Корреляция: {key[1]}\n\n"
                                                     f"🤷‍♂Альтернатива: {'-' if key[2]==0 else key[2]}, "
                                                     f"{'-' if key[3]==0 else key[3]}")
             await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
-            remove(f"bot_brain/misc/files/{call.from_user.id}.mp3")
+            remove(f"temp/{call.from_user.id}.mp3")
         except FileNotFoundError:
             await call.message.answer('Я не нашел файл который сам же скачал🙂')
 
@@ -128,5 +128,5 @@ def register_youtube(dp: Dispatcher):
                                 lambda l: (x := l.text).startswith('https://you') or x.startswith('https://www.you'),
                                 in_db=True)
     dp.register_callback_query_handler(download_low, yt_call.filter(resolution='low'))
-    dp.register_callback_query_handler(download_low, yt_call.filter(resolution='high'))
+    dp.register_callback_query_handler(download_high, yt_call.filter(resolution='high'))
     dp.register_callback_query_handler(download_audio, yt_call.filter(resolution='audio'))
