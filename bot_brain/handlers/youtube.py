@@ -11,6 +11,8 @@ from bot_brain.misc.coding import decode, encode
 from bot_brain.misc.convert_audio import m4a_to_mp3
 from bot_brain.misc.audio import find_key
 
+from bot_brain.data_base.users_db import is_musician
+
 
 async def evaluate_youtube(msg: Message):
     try:
@@ -76,19 +78,28 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
     await call.answer()
     await call.message.delete()
     try:
+        # evaluate
         yt = YouTube(decode(callback_data.get('yt_object')))
-
         yt.streams.filter(only_audio=True)
         video = yt.streams.get_by_itag(251)
-
-        assert (size := round(video.filesize_approx / 1000000)) < 15
-
+        # download
+        assert (size := round(video.filesize_approx / 1000000)) < 50
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=f'{call.from_user.id}.m4a',
                        output_path='bot_brain/misc/files')
-        # конвертация и находка
+        # convert and find
         await call.bot.edit_message_text('🔄 Конвертирую👨‍🔧', call.message.chat.id, call.message.message_id + 1)
-        await m4a_to_mp3(call.from_user.id)
+        await m4a_to_mp3(call.from_user.id, yt.author, yt.title)
+
+        # preference check (DB request)
+        await (preference := gather(is_musician(call.from_user.id)))
+        if preference.result()[0]:
+            await call.message.answer_audio(open(f"bot_brain/misc/files/{call.from_user.id}.mp3", 'rb'))
+            await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
+            remove(f"bot_brain/misc/files/{call.from_user.id}.mp3")
+            return
+
+        # if musician
         await call.bot.edit_message_text('🔎 Определяю тональность🎵', call.message.chat.id, call.message.message_id + 1)
         await (key := gather(find_key(call.from_user.id)))
         key = key.result()[0]
@@ -107,9 +118,9 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
             await call.message.answer('Я не нашел файл который сам же скачал🙂')
 
     except AssertionError:
-        await call.message.answer('🟡Я скачиваю максимум 600 мб, хотят тут документалку скачать блин')
+        await call.message.answer('🟡Я скачиваю максимум 50 мб аудио')
     except KeyError:
-        await call.message.answer('🔴Название ролика ломает мою систему :( не могу скачать')
+        await call.message.answer('🔴Название ролика ломает мою систему :(. Обратитесь админу для улучшения')
 
 
 def register_youtube(dp: Dispatcher):
