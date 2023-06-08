@@ -17,8 +17,8 @@ from bot_brain.data_base.users_db import is_musician
 async def evaluate_youtube(msg: Message):
     try:
         yt = YouTube(msg.text)
-        caption_text = f"{yt.title}\n" \
-                       f"👁Views: {yt.views}"
+        caption_text = f"<b>{yt.title}</b>\n\n" \
+                       f"👤<code>{yt.author}</code>"
 
         await msg.answer_photo(yt.thumbnail_url, caption=caption_text,
                                reply_markup=yt_options(encode(msg.text)))
@@ -43,7 +43,7 @@ async def download_high(call: CallbackQuery, callback_data: dict):
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=(file := f'{call.from_user.id}.mp4'))
         await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
-        await call.message.answer_video(open(file, 'rb'))
+        await call.message.answer_video(open(file, 'rb'), supports_streaming=True)
         await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
         remove(file)
     except AssertionError:
