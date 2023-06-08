@@ -4,7 +4,7 @@ from os import remove
 from asyncio import gather
 
 from pytube import YouTube
-from pytube.exceptions import RegexMatchError, PytubeError
+from pytube.exceptions import RegexMatchError, PytubeError, AgeRestrictedError
 
 from bot_brain.keyboards.inline_user import yt_options, yt_call
 from bot_brain.misc.coding import decode, encode
@@ -47,9 +47,11 @@ async def download_high(call: CallbackQuery, callback_data: dict):
         await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
         remove(file)
     except AssertionError:
-        await call.message.answer('🟡Я скачиваю максимум 600 мб, хотят тут документалку скачать блин')
+        await call.message.answer('🟡Я скачиваю максимум 50 мб, (это особенность Python разработки)')
     except KeyError:
         await call.message.answer('🔴Название ролика ломает мою систему :( не могу скачать')
+    except AgeRestrictedError:
+        await call.message.answer("🔞Видео имеет ограничение по возрасту. Пока что бот такое не скачивает")
 
 
 async def download_low(call: CallbackQuery, callback_data: dict):
@@ -69,9 +71,11 @@ async def download_low(call: CallbackQuery, callback_data: dict):
         await call.bot.delete_message(call.message.chat.id, call.message.message_id+1)
         remove(file)
     except AssertionError:
-        await call.message.answer('🟡Я скачиваю максимум 600 мб, хотят тут документалку скачать блин')
+        await call.message.answer('🟡Я скачиваю максимум 50 мб (это особенность Python разработки)')
     except KeyError:
         await call.message.answer('🔴Название ролика ломает мою систему :( не могу скачать')
+    except AgeRestrictedError:
+        await call.message.answer("🔞Видео имеет ограничение по возрасту. Пока что бот такое не скачивает")
 
 
 async def download_audio(call: CallbackQuery, callback_data: dict):
@@ -121,6 +125,8 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         await call.message.answer('🟡Я скачиваю максимум 50 мб аудио')
     except KeyError:
         await call.message.answer('🔴Название ролика ломает мою систему :(. Обратитесь админу для улучшения')
+    except AgeRestrictedError:
+        await call.message.answer("🔞Видео имеет ограничение по возрасту. Пока что бот такое не скачивает")
 
 
 def register_youtube(dp: Dispatcher):
