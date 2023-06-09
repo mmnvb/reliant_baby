@@ -53,3 +53,23 @@ async def delete_user(id_code):
 async def is_musician(user_id):
     cursor.execute(f"SELECT music FROM users WHERE id={user_id}")
     return False if cursor.fetchone()[0] == 1 else True
+
+
+async def get_user_config(user_id):
+    cursor.execute(f"SELECT music, motive, weather FROM users WHERE id={user_id}")
+    return cursor.fetchone()
+
+
+async def update_music_db(user_id, index: int):
+    cursor.execute(f"UPDATE users SET music={index} WHERE id={user_id}")
+    base.commit()
+
+
+async def update_motive_db(user_id, index: int):
+    cursor.execute(f"UPDATE users SET motive={index} WHERE id={user_id}")
+    base.commit()
+
+
+async def update_weather_db(user_id, index: int):
+    cursor.execute(f"UPDATE users SET weather={index} WHERE id={user_id}")
+    base.commit()
