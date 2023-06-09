@@ -12,6 +12,7 @@ async def ogg(msg: Message):
     except AttributeError:
         await ogg_to_mp3(msg.from_user.id, msg.forward_sender_name)
     finally:
+        await msg.bot.send_chat_action(msg.chat.id, 'upload_audio')
         await msg.answer_audio(open(f'temp/{msg.from_user.id}.mp3', "rb"))
         remove(f"temp/{msg.from_user.id}.mp3")
 
@@ -23,6 +24,7 @@ async def m4a(msg: Message):
         await temp.edit_text('🔄Конвертация')
         await m4a_to_mp3(msg.from_user.id, msg.audio.performer, msg.audio.title)
         await temp.delete()
+        await msg.bot.send_chat_action(msg.chat.id, 'upload_audio')
         await msg.answer_audio(open(f'temp/{msg.from_user.id}.mp3', 'rb'), thumb=msg.audio.thumb.file_id)
         remove(f'temp/{msg.from_user.id}.mp3')
 

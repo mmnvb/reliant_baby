@@ -42,9 +42,9 @@ async def download_high(call: CallbackQuery, callback_data: dict):
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=(file := f'temp/{call.from_user.id}.mp4'))
-        await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
-        await call.message.answer_video(open(file, 'rb'))
         await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
+        await call.bot.send_chat_action(call.message.chat.id, 'upload_video')
+        await call.message.answer_video(open(file, 'rb'))
         remove(file)
     except AssertionError:
         await call.message.answer('🟡Я скачиваю максимум 50 мб, (это особенность Python разработки)')
@@ -66,9 +66,9 @@ async def download_low(call: CallbackQuery, callback_data: dict):
 
         await call.message.answer(f'💾Скачиваю шеф, файл весит {size} MB')
         video.download(filename=(file := f'temp/{call.from_user.id}.mp4'))
-        await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id+1)
-        await call.message.answer_video(open(file, 'rb'))
         await call.bot.delete_message(call.message.chat.id, call.message.message_id+1)
+        await call.bot.send_chat_action(call.message.chat.id, 'upload_video')
+        await call.message.answer_video(open(file, 'rb'))
         remove(file)
     except AssertionError:
         await call.message.answer('🟡Я скачиваю максимум 50 мб (это особенность Python разработки)')
@@ -98,6 +98,7 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         # preference check (DB request)
         await (preference := gather(is_musician(call.from_user.id)))
         if preference.result()[0]:
+            await call.bot.send_chat_action(call.message.chat.id, 'upload_audio')
             await call.message.answer_audio(open(f"temp/{call.from_user.id}.mp3", 'rb'))
             await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
             remove(f"temp/{call.from_user.id}.mp3")
@@ -109,14 +110,13 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         key = key.result()[0]
         try:
             # загрузка
-            await call.bot.edit_message_text('⬆ Загружаю шеф', call.message.chat.id, call.message.message_id + 1)
-
+            await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
+            await call.bot.send_chat_action(call.message.chat.id, 'upload_audio')
             await call.message.answer_audio(open(f"temp/{call.from_user.id}.mp3", 'rb'),
                                             caption=f"🎹Тональность: {key[0]}\n"
                                                     f"🎲Корреляция: {key[1]}\n\n"
                                                     f"🤷‍♂Альтернатива: {'-' if key[2]==0 else key[2]}, "
                                                     f"{'-' if key[3]==0 else key[3]}")
-            await call.bot.delete_message(call.message.chat.id, call.message.message_id + 1)
             remove(f"temp/{call.from_user.id}.mp3")
         except FileNotFoundError:
             await call.message.answer('Я не нашел файл который сам же скачал🙂')

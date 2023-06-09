@@ -25,6 +25,7 @@ async def send_daily_weather(bot: Bot):
 
 
 async def give_air(msg: Message):
+    await msg.bot.send_chat_action(msg.chat.id, 'typing')
     await (daily_text := gather(get_whether_msg()))
     await msg.answer(daily_text.result()[0])
 
@@ -59,6 +60,7 @@ async def get_whether_msg():
 
 
 async def give_weather(msg: Message):
+    await msg.bot.send_chat_action(msg.chat.id, 'typing')
     req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
     soup = BeautifulSoup(req.text, 'lxml')
 
