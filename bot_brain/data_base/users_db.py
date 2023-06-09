@@ -35,6 +35,16 @@ async def get_all_user():
     return cursor.fetchall()
 
 
+async def get_air_user():
+    cursor.execute("""SELECT id FROM users WHERE weather=1""")
+    return cursor.fetchall()
+
+
+async def get_motive_user():
+    cursor.execute("""SELECT id FROM users WHERE motive=1""")
+    return cursor.fetchall()
+
+
 async def delete_user(id_code):
     cursor.execute(f"""DELETE FROM users WHERE id={id_code}""")
     base.commit()

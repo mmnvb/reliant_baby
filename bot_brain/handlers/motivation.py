@@ -6,11 +6,20 @@ from aiogram.utils.exceptions import BotBlocked, ChatNotFound, BotKicked
 from pytube import Search
 from pytube.exceptions import AgeRestrictedError
 
+from bot_brain.data_base.users_db import get_motive_user
+
 from os import remove
 from random import choice, shuffle, randint
-import logging
+from logging import getLogger
+from asyncio import gather
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
+
+
+async def send_daily_motivation(bot: Bot):
+    await (users := gather(get_motive_user()))
+    users = users.result()[0]
+    await send_motivation(bot, [i[0] for i in users])
 
 
 async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
@@ -23,8 +32,7 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
             # get random topic
             motive = ["Andrew Tate motivation #shorts", "No Fap motivation #shorts", "Reject modernity #shorts",
                       "callisthenics insane motivation #shorts", "embrace greatness #shorts",
-                      "exposed the matrix #shorts", "inspirational quotes #shorts",
-                      "воркаут мотивация #shorts", "игорь войтенко мотивация #shorts"]
+                      "exposed the matrix #shorts", "воркаут мотивация #shorts", "игорь войтенко мотивация #shorts"]
 
             s = Search(choice(motive))
             shuffle(s.results)
@@ -41,7 +49,7 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
                         try:
                             await bot.send_video(r, open(f'temp/{call_from}.mp4', 'rb'))
                         except (BotBlocked, BotKicked, ChatNotFound):
-                            pass
+                            logger.warning(f'Cannot send motivation to {r}')
                     # clear and stop
                     remove(f'temp/{call_from}.mp4')
                     break
@@ -52,9 +60,10 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
         logger.error('Cannot parse Youtube motivation after multiple attempts')
 
 
-async def test_func(msg: Message):
+async def call_motivation(msg: Message):
     await send_motivation(msg.bot, [msg.chat.id], msg.from_user.id)
 
 
 def register_motivation(dp: Dispatcher):
-    dp.register_message_handler(test_func, commands='test')
+    dp.register_message_handler(call_motivation, commands=['motivation', 'help'])
+    dp.register_message_handler(call_motivation, text=["помоги", 'помощь', "мотивация", "вдохнови", "смотивируй"])

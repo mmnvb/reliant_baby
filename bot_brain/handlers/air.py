@@ -1,24 +1,27 @@
 from aiogram import Bot, Dispatcher
 from aiogram.types import Message
 from asyncio import gather
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.utils.exceptions import BotBlocked, BotKicked
 
 import requests
 from bs4 import BeautifulSoup
 
-from bot_brain.data_base.users_db import get_all_user
+from bot_brain.data_base.users_db import get_air_user
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
-async def send_message_cron(bot: Bot):
-    await (users := gather(get_all_user()))
+async def send_daily_weather(bot: Bot):
+    await (users := gather(get_air_user()))
     users = users.result()[0]
     await (daily_text := gather(get_whether_msg()))
+
     for user in users:
         try:
-            print(f"{user} tried")
             await bot.send_message(user[0], daily_text.result()[0])
-        except [ConnectionResetError, BotBlocked, ConnectionError]:
-            pass
+        except [ConnectionResetError, BotBlocked, ConnectionError, BotKicked]:
+            logger.warning(f"Cannot send air to {user[0]}")
 
 
 async def give_air(msg: Message):

@@ -7,11 +7,11 @@ from aiogram import Dispatcher, Bot
 from config import TOKEN
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from bot_brain.handlers.air import send_message_cron
+from bot_brain.handlers.air import send_daily_weather
 from bot_brain.handlers.youtube import register_youtube
 from bot_brain.handlers.admin import register_admin_handlers
 from bot_brain.handlers.air import register_air_requests
-from bot_brain.handlers.motivation import register_motivation
+from bot_brain.handlers.motivation import register_motivation, send_daily_motivation
 from bot_brain.handlers.convert import register_covert
 from bot_brain.middleware.antiflood import ThrottlingMiddleware
 from bot_brain.data_base.users_db import db_start
@@ -47,8 +47,15 @@ async def main():
 
     await db_start()
 
+    # don't forget to change the value depending on your Server
     scheduler = AsyncIOScheduler(timezone='Asia/Tashkent')
-    scheduler.add_job(send_message_cron, trigger='cron', hour=7, minute=58, start_date=datetime.now(),
+    scheduler.add_job(send_daily_weather, trigger='cron', hour=7, minute=55, start_date=datetime.now(),
+                      kwargs={'bot': bot})
+    scheduler.add_job(send_daily_motivation, trigger='cron', hour=7, minute=59, start_date=datetime.now(),
+                      kwargs={'bot': bot})
+    scheduler.add_job(send_daily_motivation, trigger='cron', hour=13, minute=30, start_date=datetime.now(),
+                      kwargs={'bot': bot})
+    scheduler.add_job(send_daily_motivation, trigger='cron', hour=15, minute=30, start_date=datetime.now(),
                       kwargs={'bot': bot})
     scheduler.start()
 
