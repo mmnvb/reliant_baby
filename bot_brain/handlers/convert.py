@@ -17,4 +17,4 @@ async def ogg(msg: Message):
 
 
 def register_covert(dp: Dispatcher):
-    dp.register_message_handler(ogg, content_types='voice')
+    dp.register_message_handler(ogg, content_types='voice', in_db=True)

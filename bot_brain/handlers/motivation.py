@@ -65,5 +65,6 @@ async def call_motivation(msg: Message):
 
 
 def register_motivation(dp: Dispatcher):
-    dp.register_message_handler(call_motivation, commands=['motivation', 'help'])
-    dp.register_message_handler(call_motivation, text=["помоги", 'помощь', "мотивация", "вдохнови", "смотивируй"])
+    dp.register_message_handler(call_motivation, commands=['motivation', 'help'], in_db=True)
+    dp.register_message_handler(call_motivation, text=["помоги", 'помощь', "мотивация", "вдохнови", "смотивируй"],
+                                in_db=True)
