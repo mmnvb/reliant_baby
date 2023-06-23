@@ -13,6 +13,7 @@ from bot_brain.handlers.admin import register_admin_handlers
 from bot_brain.handlers.air import register_air_requests
 from bot_brain.handlers.motivation import register_motivation, send_daily_motivation
 from bot_brain.handlers.convert import register_covert
+from bot_brain.handlers.instagram import register_instagram
 from bot_brain.middleware.antiflood import ThrottlingMiddleware
 from bot_brain.data_base.users_db import db_start
 from bot_brain.filters.user_in_db import UserInDB
@@ -31,6 +32,7 @@ def register_all_handlers(dispatcher):
     register_motivation(dispatcher)
     register_air_requests(dispatcher)
     register_youtube(dispatcher)
+    register_instagram(dispatcher)
     register_covert(dispatcher)
 
 
