@@ -31,32 +31,35 @@ async def give_air(msg: Message):
 
 
 async def get_whether_msg():
-    req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
-    soup = BeautifulSoup(req.text, 'lxml')
+    try:
+        req = requests.get('https://www.iqair.com/uzbekistan/toshkent-shahri/tashkent')
+        soup = BeautifulSoup(req.text, 'lxml')
 
-    text = soup.find('tr', class_='today').text.split()
-    air_index = int(text[len(text)-5])
-    temperature = text[len(text)-3].removeprefix('AQI').split('°')
-    temperature = sorted(temperature, reverse=True)
+        text = soup.find('tr', class_='today').text.split()
+        air_index = int(text[len(text)-7])
+        temperature = text[len(text)-3].removeprefix('AQI').split('°')
+        temperature = sorted(temperature, reverse=True)
 
-    if air_index < 51:
-        air_comment, air_smile = 'чистый', '🟢'
-    elif air_index < 101:
-        air_comment, air_smile = 'средний', '🟡'
-    elif air_index < 151:
-        air_comment, air_smile = 'нездоровый для чувст. групп', '🟠'
-    elif air_index < 201:
-        air_comment, air_smile = 'нездоровый', '🟠'
-    elif air_index < 301:
-        air_comment, air_smile = 'опасный', '🔴'
-    else:
-        air_comment, air_smile = 'Очень опасный', '⚫'
+        if air_index < 51:
+            air_comment, air_smile = 'чистый', '🟢'
+        elif air_index < 101:
+            air_comment, air_smile = 'средний', '🟡'
+        elif air_index < 151:
+            air_comment, air_smile = 'нездоровый для чувст. групп', '🟠'
+        elif air_index < 201:
+            air_comment, air_smile = 'нездоровый', '🟠'
+        elif air_index < 301:
+            air_comment, air_smile = 'опасный', '🔴'
+        else:
+            air_comment, air_smile = 'Очень опасный', '⚫'
 
-    respond_text = f"🌦Сегодня в Ташкенте {temperature[0]}° - {temperature[1]}° " \
-                   f"{'холода' if temperature[1].startswith('-') else 'тепла'}\n\n" \
-                   f"{air_smile}Воздух: <b>{air_index}</b> (AQI)\n<i>( {air_comment} )</i>\n\n" \
-                   f"Берегите себя, хорошего дня шеф❤"
-    return respond_text
+        respond_text = f"🌦Сегодня в Ташкенте {temperature[0]}° - {temperature[1]}° " \
+                       f"{'холода' if temperature[1].startswith('-') else 'тепла'}\n\n" \
+                       f"{air_smile}Воздух: <b>{air_index}</b> (AQI)\n<i>( {air_comment} )</i>\n\n" \
+                       f"Берегите себя, хорошего дня шеф❤"
+        return respond_text
+    except (ValueError, Exception):
+        return "Smth went wrong"
 
 
 async def give_weather(msg: Message):
