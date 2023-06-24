@@ -12,6 +12,7 @@ from os import remove
 from random import choice, shuffle, randint
 from logging import getLogger
 from asyncio import gather
+from config import motive
 
 logger = getLogger(__name__)
 
@@ -30,11 +31,8 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
     while try_count < max_attempts:
         try:
             # get random topic
-            motive = ["write your topic here"]
-
             s = Search(choice(motive))
             shuffle(s.results)
-
             # look for proper one
             for i in s.results:
                 i.streams.filter(file_extension='mp4')

@@ -2,4 +2,4 @@
 .idea
 .venv
 users.db
-bot_brain/handlers/motivation.py
+config.py

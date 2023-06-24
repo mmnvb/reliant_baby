@@ -8,3 +8,6 @@ if os.path.exists(dotenv_path):
 
 TOKEN = os.getenv('token')
 ADMIN = os.getenv('admin')
+
+# use #shorts tag to enhance searching
+motive = ["Write your tags here", "And here"]

@@ -32,6 +32,6 @@ Here I test and combine all of my skills.</i>
 <ol>
     <li>Install the dependencies</li>
     <li>Change the timezone of APScheduler depending on the location of your server <i>(bot.py)</i></li>
-    <li>Add motivation search tags for <code>motive: list</code> variable <i>(handlers/motivation.py)</i></li>
+    <li>Add motivation search tags for <code>motive: list</code> variable <i>(config.py)</i></li>
     <li>Enjoy!</li>
 </ol>
