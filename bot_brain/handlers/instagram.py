@@ -5,7 +5,7 @@ from aiogram.utils.exceptions import FileIsTooBig
 import instaloader
 from instaloader.exceptions import InvalidArgumentException, PrivateProfileNotFollowedException
 
-from os import path
+from os import path, remove
 
 
 async def download_post_media(url, id_code: int):
@@ -43,7 +43,8 @@ async def download_insta(msg: Message):
         # download
         status = await download_post_media(msg.text.split('/')[4], msg.from_user.id)
         assert status[0] is True
-        # upload - media group
+
+        # upload - MEDIA GROUP
         if status[1] > 1:
             await ChatActions.upload_photo()
             files = [f"{(x:= f'{msg.from_user.id}_{i}')}.{'mp4' if path.exists(f'temp/instagram/{x}.mp4') else 'jpg'}"
@@ -52,9 +53,11 @@ async def download_insta(msg: Message):
                                                     "type": f"{'photo' if i.endswith('.jpg') else 'video'}"}
                                                      for i in files])
             await response[0].edit_caption('Выполнил шеф❤')
-            # TODO: add file remove
+            for file in files:
+                remove(f"temp/instagram/{file}")
             return
-        # video
+
+        # VIDEO
         if status[2]:
             try:
                 await ChatActions.upload_video()
@@ -62,15 +65,17 @@ async def download_insta(msg: Message):
             except FileIsTooBig:
                 await msg.answer('Файл слишком большой (50+мб)')
             finally:
-                # TODO: add file remove
+                remove(f"temp/instagram/{msg.from_user.id}.mp4")
                 return
+
+        # PHOTO
         try:
             await ChatActions.upload_photo()
             await msg.answer_photo(open(f"temp/instagram/{msg.from_user.id}.jpg", 'rb'))
         except FileIsTooBig:
             await msg.answer('Файл слишком большой (50+мб)')
         finally:
-            # TODO: add file remove
+            remove(f"temp/instagram/{msg.from_user.id}.jpg")
             return
     except AssertionError:
         await msg.answer("<b>😕Не получилось скачать ваш пост</b>\n\n"
