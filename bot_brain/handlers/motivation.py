@@ -30,9 +30,7 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
     while try_count < max_attempts:
         try:
             # get random topic
-            motive = ["Andrew Tate motivation #shorts", "No Fap motivation #shorts", "Reject modernity #shorts",
-                      "callisthenics insane motivation #shorts", "embrace greatness #shorts",
-                      "воркаут мотивация #shorts", "игорь войтенко мотивация #shorts"]
+            motive = ["write your topic here"]
 
             s = Search(choice(motive))
             shuffle(s.results)
