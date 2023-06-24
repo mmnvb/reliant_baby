@@ -52,6 +52,8 @@ async def download_high(call: CallbackQuery, callback_data: dict):
         await call.message.answer('🔴Название ролика ломает мою систему :( не могу скачать')
     except AgeRestrictedError:
         await call.message.answer("🔞Видео имеет ограничение по возрасту. Пока что бот такое не скачивает")
+    except (RegexMatchError, Exception):
+        await call.message.answer("Что то пошло не так")
 
 
 async def download_low(call: CallbackQuery, callback_data: dict):
@@ -76,6 +78,8 @@ async def download_low(call: CallbackQuery, callback_data: dict):
         await call.message.answer('🔴Название ролика ломает мою систему :( не могу скачать')
     except AgeRestrictedError:
         await call.message.answer("🔞Видео имеет ограничение по возрасту. Пока что бот такое не скачивает")
+    except (RegexMatchError, Exception):
+        await call.message.answer("Что то пошло не так")
 
 
 async def download_audio(call: CallbackQuery, callback_data: dict):
@@ -127,6 +131,8 @@ async def download_audio(call: CallbackQuery, callback_data: dict):
         await call.message.answer('🔴Название ролика ломает мою систему :(. Обратитесь админу для улучшения')
     except AgeRestrictedError:
         await call.message.answer("🔞Видео имеет ограничение по возрасту. Пока что бот такое не скачивает")
+    except (RegexMatchError, Exception):
+        await call.message.answer("Что то пошло не так")
 
 
 def register_youtube(dp: Dispatcher):

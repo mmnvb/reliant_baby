@@ -9,5 +9,8 @@ if os.path.exists(dotenv_path):
 TOKEN = os.getenv('token')
 ADMIN = os.getenv('admin')
 
+
+# env var tags is a string with each tag separated by comma ","
 # use #shorts tag to enhance searching
-motive = ["Write your tags here", "And here"]
+
+motive = os.getenv('tags').split(", ")
