@@ -1,5 +1,5 @@
 <h1>My Telegram assistant</h1>
-<i>⚠️This is my hobby project. I don't bother much about performance here.</br>
+<i>⚠️This is my hobby project. I don't bother much about performance here.
 Here I test and combine all of my skills.</i>
 
 <h2>✨Features</h2>
@@ -30,8 +30,13 @@ Here I test and combine all of my skills.</i>
 
 <h2>🌐Deploy</h2>
 <ol>
-    <li>Install the dependencies</li>
     <li>Change the timezone of APScheduler depending on the location of your server <i>(bot.py)</i></li>
     <li>Add motivation search tags for <code>motive: list</code> env variable <i>(you can create .env file)</i></li>
+    <li>Install the dependencies (Ubuntu example)</li>
+    <ol>
+        <li><code>sudo apt install ffmpeg</code></li>
+        <li><code>source venv/bin/activate</code></li>
+        <li><code>pip install -r requirements.txt</code></li>
+    </ol>
     <li>Enjoy!</li>
 </ol>
