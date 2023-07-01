@@ -45,6 +45,11 @@ async def evaluate(msg: Message):
         logger.error('Something went wrong')
 
 
+async def start(msg: Message):
+    await msg.answer(f'👋Это Reliant Baby, твой ID: <code>{msg.from_user.id}</code>')
+
+
 def register_gpt(dp: Dispatcher):
+    dp.register_message_handler(start, commands='start')
     dp.register_message_handler(evaluate, lambda x: len(x.text) < 200,
                                 content_types='text', in_db=True)
