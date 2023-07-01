@@ -37,9 +37,7 @@ async def get_whether_msg():
 
         text = soup.find('tr', class_='today').text.split()
         air_index = int(text[len(text)-7])
-        temperature = text[len(text)-3].removeprefix('AQI').split('°')
-        temperature = sorted(temperature, reverse=True)
-
+        temperature = text[4:6:1]
         if air_index < 51:
             air_comment, air_smile = 'чистый', '🟢'
         elif air_index < 101:
@@ -53,7 +51,7 @@ async def get_whether_msg():
         else:
             air_comment, air_smile = 'Очень опасный', '⚫'
 
-        respond_text = f"🌦Сегодня в Ташкенте {temperature[0]}° - {temperature[1]}° " \
+        respond_text = f"🌦Сегодня в Ташкенте {temperature[1]} - {temperature[0]} " \
                        f"{'холода' if temperature[1].startswith('-') else 'тепла'}\n\n" \
                        f"{air_smile}Воздух: <b>{air_index}</b> (AQI)\n<i>( {air_comment} )</i>\n\n" \
                        f"Берегите себя, хорошего дня шеф❤"
