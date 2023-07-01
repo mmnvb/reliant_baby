@@ -36,6 +36,7 @@ async def get_whether_msg():
         soup = BeautifulSoup(req.text, 'lxml')
 
         text = soup.find('tr', class_='today').text.split()
+        # split the values
         air_index = int(text[len(text)-7])
         temperature = text[4:6:1]
         if air_index < 51:
