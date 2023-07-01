@@ -46,5 +46,5 @@ async def evaluate(msg: Message):
 
 
 def register_gpt(dp: Dispatcher):
-    dp.register_message_handler(evaluate, lambda x: len(x.text) < 500,
+    dp.register_message_handler(evaluate, lambda x: len(x.text) < 200,
                                 content_types='text', in_db=True)
