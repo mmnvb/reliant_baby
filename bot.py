@@ -14,6 +14,7 @@ from bot_brain.handlers.air import register_air_requests
 from bot_brain.handlers.motivation import register_motivation, send_daily_motivation
 from bot_brain.handlers.convert import register_covert
 from bot_brain.handlers.instagram import register_instagram
+from bot_brain.handlers.gpt import register_gpt
 from bot_brain.middleware.antiflood import ThrottlingMiddleware
 from bot_brain.data_base.users_db import db_start
 from bot_brain.filters.user_in_db import UserInDB
@@ -34,6 +35,7 @@ def register_all_handlers(dispatcher):
     register_youtube(dispatcher)
     register_instagram(dispatcher)
     register_covert(dispatcher)
+    register_gpt(dispatcher)
 
 
 async def main():

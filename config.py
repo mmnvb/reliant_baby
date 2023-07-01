@@ -14,3 +14,4 @@ ADMIN = os.getenv('admin')
 # use #shorts tag to enhance searching
 
 motive = os.getenv('tags').split(", ")
+GPT_API = os.getenv('gpt')
