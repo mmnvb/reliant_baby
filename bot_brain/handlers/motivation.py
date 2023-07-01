@@ -57,6 +57,7 @@ async def send_motivation(bot: Bot, user_ids: list, call_from: int = 1):
 
 
 async def call_motivation(msg: Message):
+    await msg.bot.send_chat_action(msg.chat.id, 'upload_video')
     await send_motivation(msg.bot, [msg.chat.id], msg.from_user.id)
 
 
