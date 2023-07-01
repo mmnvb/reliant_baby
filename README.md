@@ -16,6 +16,7 @@ Here I test and combine all of my skills.</i>
 </ul>
 <h3>Tools</h3>
 <ul>
+  <li>GPT 3.5 AI model</li>
   <li>Musical key finder🎵</li>
   <li>Weather forecast⛅️</li>
   <li>Air pollution level🏭</li>
