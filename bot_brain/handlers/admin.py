@@ -3,12 +3,13 @@ from sqlite3 import IntegrityError
 
 from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.types import Message, CallbackQuery
+from aiogram.utils.exceptions import BotKicked, BotBlocked, ChatNotFound, ChatIdIsEmpty
 
 from bot_brain.data_base.users_db import register_user_db, delete_user, get_user_config, update_music_db, \
-    update_motive_db, update_weather_db
+    update_motive_db, update_weather_db, get_all_user
 from bot_brain.keyboards.inlne_admin import main_menu, remove_keyboard, user_callback, edit_keyboard, property_kb, \
-    choice_callback
-from bot_brain.misc.states import FsmAdmin
+    choice_callback, post_callback, post_kb
+from bot_brain.misc.states import FsmAdmin, FsmPost
 
 
 async def admin_panel(msg: Message):
@@ -100,6 +101,40 @@ async def change_weather(call: CallbackQuery, callback_data: dict):
     await change_properties(call, callback_data)
 
 
+# ===== POST =====
+async def start_post(call: CallbackQuery):
+    await call.message.delete()
+    await FsmPost.content.set()
+    await call.message.answer("💬Введите текст поста")
+
+
+async def handle_post(msg: Message):
+    await msg.answer(f"Ваш пост\n\n"
+                     f"<i>{msg.text}</i>\n\n"
+                     f"Отправить его?", reply_markup=post_kb(msg.text))
+
+
+async def send_post(call: CallbackQuery, callback_data: dict):
+    await call.answer("Начинаю...")
+    await (users := gather(get_all_user()))
+    users = users.result()[0]
+
+    counter = 0
+    for i in users:
+        try:
+            await call.bot.send_message(i[0], callback_data.get("text"))
+        except (BotBlocked, BotKicked, ChatNotFound, ChatIdIsEmpty, Exception):
+            counter += 1
+    await call.message.delete()
+    await call.message.answer(f"🟢Пост отправлен {len(users)-counter}/{len(users)}")
+
+
+async def cancel_post(call: CallbackQuery, state: FSMContext, callback_data: dict):
+    await state.finish()
+    await call.answer("Отменила")
+    await call.message.delete()
+
+
 def register_admin_handlers(dp: Dispatcher):
     dp.register_message_handler(admin_panel, commands='admin', is_admin=True)
     dp.register_message_handler(backup, commands='backup', is_admin=True)
@@ -120,3 +155,9 @@ def register_admin_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(change_music, choice_callback.filter(method='edit_music'))
     dp.register_callback_query_handler(change_motive, choice_callback.filter(method='edit_motive'))
     dp.register_callback_query_handler(change_weather, choice_callback.filter(method='edit_weather'))
+    # post
+    dp.register_callback_query_handler(start_post, text="post", is_admin=True)
+    dp.register_message_handler(handle_post, state=FsmPost.content)
+    dp.register_callback_query_handler(cancel_post, post_callback.filter(method="no"), state=FsmPost.content)
+    dp.register_callback_query_handler(send_post, post_callback.filter(method="yes"), state=FsmPost.content)
+

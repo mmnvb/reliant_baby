@@ -6,11 +6,13 @@ from aiogram.utils.callback_data import CallbackData
 
 user_callback = CallbackData("self", "method", "id", 'name')
 choice_callback = CallbackData("self", "method", "id", 'i')
+post_callback = CallbackData("self", "method", "text")
 
 main_menu = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton('📝Edit', callback_data='edit')],
     [InlineKeyboardButton('➕Add', callback_data='add'),
-     InlineKeyboardButton('🗑Remove', callback_data='remove')]
+     InlineKeyboardButton('🗑Remove', callback_data='remove')],
+    [InlineKeyboardButton("✍️Post", callback_data="post")]
 ])
 
 
@@ -63,4 +65,13 @@ def property_kb_user(user_id, choices: tuple):
         [InlineKeyboardButton(f"⛅️Погода: {'✅' if choices[2] == 1 else '🔴'}",
                               callback_data=choice_callback.new(method='edit_weather', id=user_id, i=choices[2]))],
         [InlineKeyboardButton(f"🔙Назад", callback_data='back')]
+    ])
+
+
+def post_kb(content):
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton("✅Да", callback_data=post_callback.new(method="yes",
+                                                                     text=f"{content}"))],
+        [InlineKeyboardButton("❌Нет", callback_data=post_callback.new(method="no",
+                                                                      text='-'))]
     ])
