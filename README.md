@@ -1,6 +1,10 @@
-<h1>My Telegram assistant</h1>
-<i>⚠️This is my hobby project. I don't bother much about performance here.
-Here I test and combine all of my skills.</i>
+<div align="center">
+  <h1>👩‍🚀My Telegram assistant</h1>
+  <img src="https://github.com/mmnvb/mmnvb/blob/main/img/reliant.jpg" width="350px"><br>
+  <i>⚠️This is my hobby project. I don't bother much about performance here</i>
+</div>
+
+
 
 <h2>✨Features</h2>
 <h3>Download</h3>
